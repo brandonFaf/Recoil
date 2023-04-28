@@ -73,7 +73,9 @@ function handleLoadable<T>(
       // SSR should clear out the wake-up resolver if the Promise is resolved
       // to avoid infinite loops.  (See https://github.com/facebookexperimental/Recoil/pull/2073)
       if (isSSR && isPromise(loadable.contents)) {
-        loadable.contents.finally(() => {
+        loadable.contents.finally(value => {
+          // we need to call resolve on the promise to wake up the component
+          resolve(value);
           suspendedComponentResolvers.delete(resolve);
         });
       }
